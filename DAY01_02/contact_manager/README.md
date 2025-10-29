@@ -99,16 +99,7 @@ curl -X POST http://127.0.0.1:8000/contacts/ \
 
 ---
 
-## Design notes & tips
-- Keep `__init__.py` files lightweight. Avoid heavy imports in package initializers to prevent import errors during testing or tooling.
-- `app/api/routers/contact.py` uses `ContactCreate` and `ContactUpdate` Pydantic models. For partial updates, `.model_dump(exclude_unset=True)` is used so only provided fields are merged.
-- `generate_unique_id` lives in `app/api/core/contact.py` and is async; remember to `await` it when used.
-
----
-
 ## Contribution
 - Fork and open a PR. Keep changes small and focused.
-- Add tests (pytest) for new behavior and include sample data when useful.
-
 ---
 Happy coding!
