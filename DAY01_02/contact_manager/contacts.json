@@ -1,0 +1,38 @@
+[
+    {
+        "id": "c928b5a0-0e12-4f38-9271-e948a3c8e43d",
+        "name": "vivek rawat",
+        "email": "alice.johnson@example.com",
+        "phone": "555-1234"
+    },
+    {
+        "id": "4b3d17e6-2c5a-47f1-80f4-d69c9b5a0c81",
+        "name": "Bob Williams",
+        "email": "bob.williams@company.net",
+        "phone": "555-5678"
+    },
+    {
+        "id": "a7e1f9c8-3b4d-4e5a-8f6b-1c0d2a3e4f50",
+        "name": "Charlie Brown",
+        "email": "charlie@peanuts.org",
+        "phone": "555-9012"
+    },
+    {
+        "id": "e6a0d4b2-5f3c-4a1e-9d2b-8c7a6f5e4d3c",
+        "name": "David Miller",
+        "email": "david.m@webmail.com",
+        "phone": null
+    },
+    {
+        "id": "f5c2b1d7-6e4a-4b0e-9c8d-7a6b5c4d3e2f",
+        "name": "Eve Davis",
+        "email": "eve.davis@corp.io",
+        "phone": "555-3456"
+    },
+    {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "phone": "+1234567890",
+        "id": "e8c1ee46-b4ae-11f0-9337-145afc308413"
+    }
+]

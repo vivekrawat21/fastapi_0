@@ -1,0 +1,3 @@
+fastapi[all]  # Includes Pydantic and essential dependencies
+uvicorn[standard] # Includes Uvicorn and its standard dependencies
+aiofiles
