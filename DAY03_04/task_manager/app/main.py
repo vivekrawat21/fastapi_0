@@ -1,7 +1,8 @@
 from fastapi import FastAPI
 
 from app.core.config import get_settings
-from app.api.v1.routes import health
+from app.api.v1.routes import health,tasks
+
 
 settings = get_settings()
 
@@ -12,6 +13,7 @@ def create_app() -> FastAPI:
 
 	# Register versioned API router
 	app.include_router(health.router, prefix="/api/v1")
+	app.include_router(tasks.router, prefix="/api/v1")
 
 	# simple root health check
 	@app.get("/", tags=["root"])
