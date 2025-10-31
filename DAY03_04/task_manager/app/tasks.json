@@ -1,13 +1,5 @@
 [
     {
-        "id": "f9a7c3b2-1b4e-4b76-9e9b-d9d88e2b1f51",
-        "title": "Buy groceries",
-        "description": "Milk, eggs, bread, and fruits",
-        "status": "pending",
-        "priority": "medium",
-        "due_date": "2025-10-31"
-    },
-    {
         "id": "7e5f8d94-5a3c-41e2-bc13-7f3c1a94dbea",
         "title": "Complete FastAPI tutorial",
         "description": "Finish the lesson on Dependency Injection and APIs",
@@ -18,7 +10,7 @@
     {
         "id": "c2a5db76-9074-46f8-8e32-29d82e1bfb01",
         "title": "Workout",
-        "description": "1-hour gym session: legs + cardio",
+        "description": "new description",
         "status": "pending",
         "priority": "low",
         "due_date": "2025-10-30"
@@ -40,11 +32,11 @@
         "due_date": "2025-11-05"
     },
     {
-        "title": "test task1",
-        "description": "tes_description1, test_description2, test_description3",
-        "priority": "low",
-        "status": "in_progress",
-        "due_date": "2025-10-30",
-        "id": "00b55193-6a4d-41f9-a4cf-bf1d288bd0d5"
+        "title": "true-send work",
+        "description": "first, Second, Third",
+        "priority": "high",
+        "status": "pending",
+        "due_date": "2025-10-01",
+        "id": "eb334e8c-5252-4d84-b510-1b2e76cb767f"
     }
 ]
