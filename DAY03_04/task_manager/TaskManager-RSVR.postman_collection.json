@@ -23,13 +23,7 @@
 					]
 				},
 				"method": "GET",
-				"header": [
-					{
-						"key": "X-API-Key",
-						"value": "1s21rnZ1qH6QDhojqUsyIBIR6STECzXbnPwHM7jVE2Y",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"emails\":[\"vivek2002@gmail.com\",\"hello123@gmail.com\",\"sdfj@gmail.com\"]\n}"
@@ -210,13 +204,7 @@
 					]
 				},
 				"method": "PUT",
-				"header": [
-					{
-						"key": "X-API-Key",
-						"value": "1s21rnZ1qH6QDhojqUsyIBIR6STECzXbnPwHM7jVE2Y",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n   \"status\":\"pendng\"\n}",
