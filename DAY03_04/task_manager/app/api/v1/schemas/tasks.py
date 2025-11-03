@@ -25,18 +25,18 @@ class Task(BaseModel):
     
     
 class TaskCreate(BaseModel):
-    title: str = Field(..., min_length=2, max_length=100, example="Buy groceries")
-    description: Optional[str] = Field(None, max_length=300, example="Milk, Bread, Eggs")
-    priority: Optional[Priority] = Field(default="medium", example="medium")
-    status: Optional[Status] = Field(default="pending", example="pending")
-    due_date: Optional[date] = Field(default=date.today(), example="2025-12-31")
+    title: str = Field(..., min_length=2, max_length=100, json_schema_extra={'example': "Buy groceries"})
+    description: Optional[str] = Field(None, max_length=300, json_schema_extra={'example': "Milk, Bread, Eggs"})
+    priority: Optional[Priority] = Field(default="medium", json_schema_extra={'example': "medium"})
+    status: Optional[Status] = Field(default="pending", json_schema_extra={'example': "pending"})
+    due_date: Optional[date] = Field(default=date.today(), json_schema_extra={'example': "2025-12-31"})
     
 class TaskUpdate(BaseModel):
-    title: Optional[str] = Field(None, min_length=2, max_length=100, example="Buy groceries")
-    description: Optional[str] = Field(None, max_length=300, example="Milk, Bread, Eggs")
-    priority: Optional[Priority] = Field(None, example="medium")
-    status: Optional[Status] = Field(None, example="pending")
-    due_date: Optional[date] = Field(None, example="2023-12-31")
+    title: Optional[str] = Field(None, min_length=2, max_length=100, json_schema_extra={'example': "Buy groceries"})
+    description: Optional[str] = Field(None, max_length=300, json_schema_extra={'example': "Milk, Bread, Eggs"})
+    priority: Optional[Priority] = Field(None, json_schema_extra={'example': "medium"})
+    status: Optional[Status] = Field(None, json_schema_extra={'example': "pending"})
+    due_date: Optional[date] = Field(None, json_schema_extra={'example': "2023-12-31"})
     
     
 class TaskResponse(BaseModel):
