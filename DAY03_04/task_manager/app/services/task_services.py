@@ -31,7 +31,7 @@ class TaskService(TaskServiceInterface):
         """Create a new task"""
         tasks = await read_tasks()
 
-        new_task = task_data.dict()
+        new_task = task_data.model_dump()
         new_task["id"] = await generate_id()
         
         tasks.append(new_task)
@@ -45,7 +45,7 @@ class TaskService(TaskServiceInterface):
         for index, task in enumerate(tasks):
             if task["id"] == task_id:
                 updated_task = task.copy()
-                update_data = task_data.dict(exclude_unset=True)
+                update_data = task_data.model_dump(exclude_unset=True)
                 updated_task.update(update_data)
                 tasks[index] = updated_task
                 await write_tasks(tasks=tasks)
