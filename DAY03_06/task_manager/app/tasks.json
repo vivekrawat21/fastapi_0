@@ -1,5 +1,5 @@
 [
-     {
+    {
         "id": "7e5f8d94-5a3c-41e2-bc13-7f3c1a94dbea",
         "title": "Complete FastAPI tutorial",
         "description": "Finish the lesson on Dependency Injection and APIs",
@@ -46,5 +46,13 @@
         "status": "pending",
         "due_date": "2025-11-12",
         "id": "0c399df7-9edd-4cc7-b88f-78a8e9d2aa62"
+    },
+    {
+        "title": "Buy groceries",
+        "description": "Milk, Bread, Eggs",
+        "priority": "medium",
+        "status": "pending",
+        "due_date": "2025-11-04",
+        "id": "aee4dbab-9475-4ddc-ad43-c931bf30db38"
     }
 ]
