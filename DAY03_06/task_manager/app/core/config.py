@@ -2,6 +2,7 @@
 """
 
 from pydantic_settings import BaseSettings
+from typing import Optional
 
 
 class Settings(BaseSettings):
@@ -10,10 +11,35 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
+        # Database configuration
+    database_url: str = "postgresql+asyncpg://postgres:password@localhost:5432/taskmanager"
+    # For PostgreSQL, use: "postgresql+asyncpg://user:password@localhost/dbname"
+    # For MySQL, use: "mysql+asyncmy://user:password@localhost/dbname"
+    # For SQLite, use: "sqlite+aiosqlite:///./task_manager.db"
+
+    # PostgreSQL specific settings
+    postgres_host: Optional[str] = "localhost"
+    postgres_port: Optional[int] = 5432
+    postgres_user: Optional[str] = "postgres"
+    postgres_password: Optional[str] = "password"
+    postgres_db: Optional[str] = "task_manager"
+
+    # SQLite specific settings
+    sqlite_file: str = "./task_manager.db"
+
     class Config:
         env_file = ".env"
 
+    @property
+    def postgres_url(self) -> str:
+        """Construct PostgreSQL URL from individual components."""
+        return f"postgresql+asyncpg://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
 
-def get_settings() -> Settings:
-    """Return settings instance (constructs from environment / .env)."""
-    return Settings()
+    @property
+    def sqlite_url(self) -> str:
+        """Construct SQLite URL."""
+        return f"sqlite+aiosqlite:///{self.sqlite_file}"
+
+
+# Initialize settings instance
+settings = Settings()

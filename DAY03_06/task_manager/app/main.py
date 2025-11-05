@@ -1,26 +1,35 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import get_settings
-from app.api.v1.routes import health,tasks
-
-
-settings = get_settings()
+from app.core.config import settings
+from app.core.database import engine
+from app.core.models import Base
+from app.api.v1.routes import health, tasks
 
 
 def create_app() -> FastAPI:
-	"""Create and configure the FastAPI application."""
-	app = FastAPI(title=settings.app_name)
+    app = FastAPI(title=settings.app_name)
 
-	# Register versioned API router
-	app.include_router(health.router, prefix="/api/v1")
-	app.include_router(tasks.router, prefix="/api/v1")
+    # Add CORS middleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-	# simple root health check
-	@app.get("/", tags=["root"])
-	async def root():
-		return {"message": f"{settings.app_name} is running"}
+    # Register versioned API router
+    app.include_router(health.router, prefix="/api/v1")
+    app.include_router(tasks.router, prefix="/api/v1")
 
-	return app
+
+    # simple root health check
+    @app.get("/", tags=["root"])
+    async def root():
+        return {"message": f"{settings.app_name} is running"}
+
+    return app
 
 
 app = create_app()

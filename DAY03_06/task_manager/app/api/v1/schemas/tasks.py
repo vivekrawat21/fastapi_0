@@ -45,7 +45,7 @@ class TaskResponse(BaseModel):
     description: Optional[str]
     priority: Priority
     status: Status
-    due_date: date
+    due_date: Optional[date]
 
 
 class TaskListResponse(BaseModel):
