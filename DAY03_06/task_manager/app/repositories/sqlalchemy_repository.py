@@ -43,12 +43,16 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         await self.session.refresh(task)
 
     async def update(self, task_id: str, task_data: Dict[str, Any]):
-        await self.session.execute(
-            update(Task)
-            .where(Task.id == int(task_id))
-            .values(**task_data)
-        )
-        await self.session.flush()
+        # Remove 'id' from task_data to prevent updating the primary key
+        update_data = {k: v for k, v in task_data.items() if k != 'id'}
+        
+        if update_data:  
+            await self.session.execute(
+                update(Task)
+                .where(Task.id == int(task_id))
+                .values(**update_data)
+            )
+            await self.session.flush()
 
     async def delete(self, task_id: str):
         await self.session.execute(
