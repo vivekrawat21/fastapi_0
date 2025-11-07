@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Union
 from enum import Enum
 from datetime import date
 
@@ -16,7 +16,7 @@ class Status(str,Enum):
     
 
 class Task(BaseModel):
-    id: int  # Changed back to int
+    id: Union[int, str]
     title: str
     description: Optional[str]
     priority: Priority
@@ -40,7 +40,7 @@ class TaskUpdate(BaseModel):
     
     
 class TaskResponse(BaseModel):
-    id: int  # Changed back to int
+    id: Union[int, str]
     title: str
     description: Optional[str]
     priority: Priority
