@@ -16,7 +16,7 @@ class Status(str,Enum):
     
 
 class Task(BaseModel):
-    id: str
+    id: int  # Changed back to int
     title: str
     description: Optional[str]
     priority: Priority
@@ -40,7 +40,7 @@ class TaskUpdate(BaseModel):
     
     
 class TaskResponse(BaseModel):
-    id: str
+    id: int  # Changed back to int
     title: str
     description: Optional[str]
     priority: Priority

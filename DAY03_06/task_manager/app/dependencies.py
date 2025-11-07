@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.unit_of_work import SQLAlchemyUnitOfWork, IUnitOfWork
+from app.unit_of_work import SQLAlchemyUnitOfWork, JsonUnitOfWork, IUnitOfWork
 from app.services.task_services import TaskService
 from app.core.database import AsyncSessionLocal
 
@@ -18,7 +18,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 def get_uow() -> IUnitOfWork:
-    return SQLAlchemyUnitOfWork()
+    return JsonUnitOfWork()  # Changed to use JSON storage
 
 
 def get_task_service(uow: IUnitOfWork = Depends(get_uow)) -> TaskService:

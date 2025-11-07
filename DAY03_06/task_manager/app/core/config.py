@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     postgres_user: Optional[str] = "postgres"
     postgres_password: Optional[str] = "password"
     postgres_db: Optional[str] = "task_manager"
+    frontend_cors_origins: list = ["http://localhost:3000", "http://localhost:3001"]
 
     # SQLite specific settings
     sqlite_file: str = "./task_manager.db"
@@ -39,6 +40,9 @@ class Settings(BaseSettings):
     def sqlite_url(self) -> str:
         """Construct SQLite URL."""
         return f"sqlite+aiosqlite:///{self.sqlite_file}"
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
 
 
 # Initialize settings instance

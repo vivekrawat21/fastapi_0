@@ -2,11 +2,12 @@ from abc import ABC, abstractmethod
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.json_repository import JsonTaskRepository
 from app.repositories.sqlalchemy_repository import SQLAlchemyTaskRepository
+from app.repositories.interfaces.task_repository_interface import ITaskRepository
 from app.utils.files_io import write_tasks
 from app.core.database import AsyncSessionLocal
 
 class IUnitOfWork(ABC):
-    tasks: SQLAlchemyTaskRepository
+    tasks: ITaskRepository  # Changed to use interface instead of concrete type
 
     @abstractmethod
     async def __aenter__(self):

@@ -18,7 +18,7 @@ class JsonTaskRepository(ITaskRepository):
 
     async def get_by_id(self, task_id: str) -> Optional[Dict[str, Any]]:
         await self._load_data()
-        return next((task for task in self.tasks if task["id"] == task_id), None)
+        return next((task for task in self.tasks if str(task["id"]) == task_id), None)
 
     async def add(self, task_data: Dict[str, Any]):
         await self._load_data()
@@ -27,10 +27,10 @@ class JsonTaskRepository(ITaskRepository):
     async def update(self, task_id: str, task_data: Dict[str, Any]):
         await self._load_data()
         for i, task in enumerate(self.tasks):
-            if task["id"] == task_id:
+            if str(task["id"]) == task_id:
                 self.tasks[i] = task_data
                 break
 
     async def delete(self, task_id: str):
         await self._load_data()
-        self.tasks = [task for task in self.tasks if task["id"] != task_id]
+        self.tasks = [task for task in self.tasks if str(task["id"]) != task_id]

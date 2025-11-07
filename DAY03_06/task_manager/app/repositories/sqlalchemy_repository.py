@@ -12,7 +12,7 @@ class SQLAlchemyTaskRepository(ITaskRepository):
     def _task_to_dict(self, task: Task) -> Dict[str, Any]:
         """Convert SQLAlchemy Task model to dictionary."""
         return {
-            "id": str(task.id),
+            "id": task.id,  # Keep as integer
             "title": task.title,
             "description": task.description,
             "priority": task.priority.value if task.priority else None,
