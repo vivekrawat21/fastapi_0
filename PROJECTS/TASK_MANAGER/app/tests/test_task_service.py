@@ -48,7 +48,7 @@ def sample_tasks():
         }
     ]
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_list_tasks_no_filters(task_service: TaskService, mock_task_repo: AsyncMock, sample_tasks):
     mock_task_repo.get_all.return_value = sample_tasks
     
@@ -58,7 +58,7 @@ async def test_list_tasks_no_filters(task_service: TaskService, mock_task_repo: 
     assert len(result.tasks) == 2
     mock_task_repo.get_all.assert_called_once()
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_list_tasks_with_status_filter(task_service: TaskService, mock_task_repo: AsyncMock, sample_tasks):
     mock_task_repo.get_all.return_value = sample_tasks
     
@@ -67,7 +67,7 @@ async def test_list_tasks_with_status_filter(task_service: TaskService, mock_tas
     assert len(result.tasks) == 1
     assert result.tasks[0].status == "pending"
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_list_tasks_with_search_no_match(task_service: TaskService, mock_task_repo: AsyncMock, sample_tasks):
     mock_task_repo.get_all.return_value = sample_tasks
     
@@ -76,7 +76,7 @@ async def test_list_tasks_with_search_no_match(task_service: TaskService, mock_t
     
     assert exc_info.value.status_code == 404
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 @patch('app.services.task_services.generate_id', new_callable=AsyncMock)
 async def test_create_task(mock_generate_id, task_service: TaskService, mock_uow: AsyncMock):
     mock_generate_id.return_value = "new-id"
@@ -96,7 +96,7 @@ async def test_create_task(mock_generate_id, task_service: TaskService, mock_uow
     mock_uow.tasks.add.assert_called_once()
     mock_uow.commit.assert_called_once()
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_update_task(task_service: TaskService, mock_uow: AsyncMock, sample_tasks):
     mock_uow.tasks.get_by_id.return_value = sample_tasks[0]
     task_update = TaskUpdate(title="Updated Title")
@@ -108,7 +108,7 @@ async def test_update_task(task_service: TaskService, mock_uow: AsyncMock, sampl
     mock_uow.tasks.update.assert_called_once()
     mock_uow.commit.assert_called_once()
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_delete_task(task_service: TaskService, mock_uow: AsyncMock, sample_tasks):
     mock_uow.tasks.get_by_id.return_value = sample_tasks[0]
     
@@ -118,7 +118,7 @@ async def test_delete_task(task_service: TaskService, mock_uow: AsyncMock, sampl
     mock_uow.tasks.delete.assert_called_once_with("1")
     mock_uow.commit.assert_called_once()
 
-@pytest.mark.anyio
+@pytest.mark.asyncio
 async def test_update_task_not_found(task_service: TaskService, mock_uow: AsyncMock):
     mock_uow.tasks.get_by_id.return_value = None
     
