@@ -39,8 +39,11 @@ class SQLAlchemyTaskRepository(ITaskRepository):
             due_date=task_data.get("due_date"),
         )
         self.session.add(task)
+        
+        
         await self.session.flush()
         await self.session.refresh(task)
+        return self._task_to_dict(task)
 
     async def update(self, task_id: str, task_data: Dict[str, Any]):
         # Remove 'id' from task_data to prevent updating the primary key

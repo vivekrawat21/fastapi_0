@@ -12,3 +12,5 @@ sqlalchemy
 asyncpg
 psycopg2-binary
 aiosqlite
+aiomysql
+cryptography

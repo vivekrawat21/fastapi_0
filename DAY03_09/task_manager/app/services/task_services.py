@@ -42,11 +42,13 @@ class TaskService:
         """Create a new task"""
         try:
             async with self.uow:
-                new_task_dict = task_data.model_dump()
-                new_task_dict["id"] = await generate_id()  # Generate integer ID
-                await self.uow.tasks.add(new_task_dict)
+                # Convert task data to dict and let MySQL auto-generate the ID
+                task_dict = task_data.model_dump()
+                
+                created_task = await self.uow.tasks.add(task_dict)
                 await self.uow.commit()
-                return TaskResponse.model_validate(new_task_dict)
+                
+                return TaskResponse.model_validate(created_task)
         except HTTPException:
             raise
         except Exception as e:

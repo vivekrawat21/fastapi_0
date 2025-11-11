@@ -22,12 +22,11 @@ def create_app() -> FastAPI:
 
     app.middleware("http")(exception_middleware_factory())
 
-    # Register versioned API router
     app.include_router(health.router, prefix="/api/v1")
     app.include_router(tasks.router, prefix="/api/v1")
 
 
-    # simple root health check
+ 
     @app.get("/", tags=["root"])
     async def root():
         return {"message": f"{settings.app_name} is running"}

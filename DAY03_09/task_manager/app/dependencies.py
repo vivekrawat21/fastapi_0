@@ -18,7 +18,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 
 
 def get_uow() -> IUnitOfWork:
-    return JsonUnitOfWork()  # Changed to use JSON storage
+    return SQLAlchemyUnitOfWork()
 
 
 def get_task_service(uow: IUnitOfWork = Depends(get_uow)) -> TaskService:
