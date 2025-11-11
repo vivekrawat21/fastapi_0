@@ -1,0 +1,16 @@
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+aiofiles
+anyio
+pytest
+pytest-mock
+alembic
+sqlalchemy
+asyncpg
+psycopg2-binary
+aiosqlite
+aiomysql
+cryptography
