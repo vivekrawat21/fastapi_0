@@ -1,5 +1,5 @@
 # Virtual environments
-.myenv/
+.menv/
 venv/
 
 # Python cache and compiled files

@@ -1,7 +1,8 @@
 from typing import List, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
-from app.core.models import Task
+from sqlalchemy.orm import selectinload
+from app.core.models import Task, User
 from app.repositories.interfaces.task_repository_interface import ITaskRepository
 
 
@@ -11,22 +12,38 @@ class SQLAlchemyTaskRepository(ITaskRepository):
 
     def _task_to_dict(self, task: Task) -> Dict[str, Any]:
         """Convert SQLAlchemy Task model to dictionary."""
-        return {
-            "id": task.id,  # Keep as integer
+        result = {
+            "id": task.id, 
+            "user_id": task.user_id, 
             "title": task.title,
             "description": task.description,
             "priority": task.priority.value if task.priority else None,
             "status": task.status.value if task.status else None,
             "due_date": task.due_date.date() if task.due_date else None,
         }
+        
+        # Include user information if loaded
+        if task.user:
+            result["user"] = {
+                "name": task.user.name,
+                "email": task.user.email
+            }
+        else:
+            result["user"] = None
+            
+        return result
 
     async def get_all(self) -> List[Dict[str, Any]]:
-        result = await self.session.execute(select(Task))
+        result = await self.session.execute(
+            select(Task).options(selectinload(Task.user))
+        )
         tasks = result.scalars().all()
         return [self._task_to_dict(task) for task in tasks]
 
     async def get_by_id(self, task_id: str) -> Optional[Dict[str, Any]]:
-        result = await self.session.execute(select(Task).where(Task.id == int(task_id)))
+        result = await self.session.execute(
+            select(Task).options(selectinload(Task.user)).where(Task.id == int(task_id))
+        )
         task = result.scalar_one_or_none()
         return self._task_to_dict(task) if task else None
 

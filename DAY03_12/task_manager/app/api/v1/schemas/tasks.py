@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, Union
 from enum import Enum
 from datetime import date
+from app.api.v1.schemas.user import UserBase
 
 
 class Priority(str,Enum):
@@ -41,6 +42,8 @@ class TaskUpdate(BaseModel):
     
 class TaskResponse(BaseModel):
     id: Union[int, str]
+    user_id: Optional[Union[int, str]] = None
+    user: Optional[UserBase] = None
     title: str
     description: Optional[str]
     priority: Priority
