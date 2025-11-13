@@ -25,8 +25,12 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         # Include user information if loaded
         if task.user:
             result["user"] = {
+                "id": task.user.id,
                 "name": task.user.name,
-                "email": task.user.email
+                "email": task.user.email,
+                "is_active": task.user.is_active,
+                "created_at": task.user.created_at,
+                "updated_at": task.user.updated_at
             }
         else:
             result["user"] = None
