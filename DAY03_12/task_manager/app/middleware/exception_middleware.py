@@ -32,7 +32,6 @@ def exception_middleware_factory():
     async def exception_middleware(request: Request, call_next: Callable):
         trace_id = str(uuid.uuid4())
         start = time.perf_counter()
-        # Let CORS preflight pass through untouched
         if request.method == "OPTIONS":
             return await call_next(request)
 
@@ -49,9 +48,7 @@ def exception_middleware_factory():
                     "trace_id": trace_id,
                 },
             )
-            # Convert any non-successful response into ProblemDetails for consistency
             if response.status_code >= 400:
-                # If the response already looks like a ProblemDetails (has trace_id), return as-is
                 try:
                     body = response.json()
                     if isinstance(body, dict) and "trace_id" in body:

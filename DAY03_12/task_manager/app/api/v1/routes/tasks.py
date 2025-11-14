@@ -30,7 +30,6 @@ async def list_tasks(
         sort_order=sort_order
     )
     
-    # Convert to TaskResponse objects
     task_responses = [TaskResponse.model_validate(task) for task in result["tasks"]]
     
     return PaginatedTaskResponse(

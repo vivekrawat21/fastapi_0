@@ -11,7 +11,6 @@ from app.middleware.exception_middleware import exception_middleware_factory
 def create_app() -> FastAPI:
     app = FastAPI(title=settings.app_name)
 
-    # Add CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.frontend_cors_origins,

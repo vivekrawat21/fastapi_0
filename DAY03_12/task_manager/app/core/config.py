@@ -11,20 +11,14 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
-        # Database configuration
     database_url: str = "mysql+aiomysql://vivek:vivek2002@localhost:3306/taskmanager_db"
-    # For PostgreSQL, use: "postgresql+asyncpg://user:password@localhost/dbname"
-    # For MySQL, use: "mysql+aiomysql://user:password@localhost/dbname"
-    # For SQLite, use: "sqlite+aiosqlite:///./task_manager.db"
 
-    # PostgreSQL specific settings
     postgres_host: Optional[str] = "localhost"
     postgres_port: Optional[int] = 5432
     postgres_user: Optional[str] = "postgres"
     postgres_password: Optional[str] = "password"
     postgres_db: Optional[str] = "task_manager"
     
-    # MySQL specific settings
     mysql_host: Optional[str] = "localhost"
     mysql_port: Optional[int] = 3306
     mysql_user: Optional[str] = "vivek"
@@ -33,7 +27,6 @@ class Settings(BaseSettings):
     
     frontend_cors_origins: list = ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"]
 
-    # SQLite specific settings
     sqlite_file: str = "./task_manager.db"
 
     class Config:
@@ -58,5 +51,4 @@ class Settings(BaseSettings):
         case_sensitive = False
 
 
-# Initialize settings instance
 settings = Settings()

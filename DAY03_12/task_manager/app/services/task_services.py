@@ -1,7 +1,6 @@
 from typing import Optional, Dict
 from app.api.v1.schemas.tasks import TaskListResponse, TaskCreate, TaskResponse, TaskUpdate
 from app.core.tasks import generate_int_id
-# compatibility alias for tests that patch 'generate_id'
 generate_id = generate_int_id
 from fastapi import HTTPException
 from datetime import date
@@ -23,7 +22,6 @@ class TaskService:
     ) -> Dict:
         try:
             async with self.uow:
-                # Get paginated tasks from repository
                 result = await self.uow.tasks.get_all(
                     skip=skip,
                     limit=limit,
@@ -34,7 +32,6 @@ class TaskService:
                 
                 tasks = result["items"]
                 
-                # Apply additional filters (due_date and search)
                 if due_date:
                     tasks = [task for task in tasks if task.get("due_date") == due_date.isoformat()]
                     if not tasks:
@@ -45,7 +42,6 @@ class TaskService:
                     if not tasks:
                         raise HTTPException(status_code=404, detail="No tasks found")
                 
-                # Return paginated response
                 return {
                     "tasks": tasks,
                     "total": result["total"],
@@ -55,7 +51,6 @@ class TaskService:
                     "has_previous": result["has_previous"]
                 }
         except HTTPException:
-            # Re-raise HTTPExceptions created by service logic (404 etc.)
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
@@ -65,7 +60,6 @@ class TaskService:
         """Create a new task"""
         try:
             async with self.uow:
-                # Convert task data to dict and let MySQL auto-generate the ID
                 task_dict = task_data.model_dump()
                 
                 created_task = await self.uow.tasks.add(task_dict)

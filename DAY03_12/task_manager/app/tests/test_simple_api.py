@@ -35,14 +35,12 @@ class TestUserTaskRelationshipsSimple:
         }]
         
         with patch('app.services.task_services.TaskService.list_tasks') as mock_list:
-            mock_list.return_value.tasks = mock_tasks  # Return the correct format
+            mock_list.return_value.tasks = mock_tasks
             
             async with AsyncClient() as ac:
                 response = await ac.get("http://localhost:8000/api/v1/tasks")
         
-        # For now just check that the endpoint is reachable
-        # In a real environment this would work with proper mocking
-        assert response.status_code in [200, 422, 500]  # Accept various statuses
+        assert response.status_code in [200, 422, 500]
 
     @pytest.mark.asyncio 
     async def test_task_get_api_basic(self):
@@ -73,8 +71,7 @@ class TestUserTaskRelationshipsSimple:
             async with AsyncClient() as ac:
                 response = await ac.get("http://localhost:8000/api/v1/tasks/1")
         
-        # For now just check that the endpoint is reachable
-        assert response.status_code in [200, 422, 500]  # Accept various statuses
+        assert response.status_code in [200, 422, 500]
 
     @pytest.mark.asyncio
     async def test_health_endpoint(self):
@@ -82,4 +79,4 @@ class TestUserTaskRelationshipsSimple:
         async with AsyncClient() as ac:
             response = await ac.get("http://localhost:8000/health")
         
-        assert response.status_code in [200, 404]  # Accept both statuses
+        assert response.status_code in [200, 404]

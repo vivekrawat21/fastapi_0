@@ -11,7 +11,6 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         self.session = session
 
     def _task_to_dict(self, task: Task) -> Dict[str, Any]:
-        """Convert SQLAlchemy Task model to dictionary."""
         result = {
             "id": task.id, 
             "user_id": task.user_id, 
@@ -22,7 +21,6 @@ class SQLAlchemyTaskRepository(ITaskRepository):
             "due_date": task.due_date.date() if task.due_date else None,
         }
         
-        # Include user information if loaded
         if task.user:
             result["user"] = {
                 "id": task.user.id,
@@ -45,31 +43,24 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         sort_order: str = "desc",
         status_filter: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Get tasks with pagination, sorting, and filtering"""
         
-        # Build base query
         query = select(Task).options(selectinload(Task.user))
         
-        # Add filtering
         if status_filter:
             query = query.where(Task.status == status_filter)
         
-        # Add sorting
         if hasattr(Task, sort_by):
             if sort_order.lower() == "desc":
                 query = query.order_by(getattr(Task, sort_by).desc())
             else:
                 query = query.order_by(getattr(Task, sort_by).asc())
         
-        # Add pagination
         paginated_query = query.offset(skip).limit(limit)
         
-        # Get total count
         count_query = select(func.count(Task.id))
         if status_filter:
             count_query = count_query.where(Task.status == status_filter)
         
-        # Execute queries
         result = await self.session.execute(paginated_query)
         count_result = await self.session.execute(count_query)
         
@@ -104,11 +95,10 @@ class SQLAlchemyTaskRepository(ITaskRepository):
         self.session.add(task)
         
         await self.session.flush()
-        await self.session.refresh(task, ["user"])  # Refresh with user relationship
+        await self.session.refresh(task, ["user"])
         return self._task_to_dict(task)
 
     async def update(self, task_id: str, task_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        # Remove 'id' from task_data to prevent updating the primary key
         update_data = {k: v for k, v in task_data.items() if k != 'id'}
         
         if update_data:  
@@ -119,7 +109,6 @@ class SQLAlchemyTaskRepository(ITaskRepository):
             )
             await self.session.flush()
         
-        # Return updated task with user data
         return await self.get_by_id(task_id)
 
     async def delete(self, task_id: str):
