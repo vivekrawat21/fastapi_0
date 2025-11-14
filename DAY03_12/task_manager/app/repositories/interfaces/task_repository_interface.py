@@ -4,7 +4,14 @@ from app.api.v1.schemas.tasks import TaskResponse
 
 class ITaskRepository(ABC):
     @abstractmethod
-    async def get_all(self) -> List[Dict[str, Any]]:
+    async def get_all(
+        self, 
+        skip: int = 0, 
+        limit: int = 100,
+        sort_by: str = "created_at",
+        sort_order: str = "desc",
+        status_filter: Optional[str] = None
+    ) -> Dict[str, Any]:
         ...
 
     @abstractmethod

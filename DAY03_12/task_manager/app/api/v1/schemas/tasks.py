@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Union
+from typing import Optional, Union, List
 from enum import Enum
 from datetime import date
 from app.api.v1.schemas.user import UserBase
@@ -31,6 +31,7 @@ class TaskCreate(BaseModel):
     priority: Optional[Priority] = Field(default="medium", json_schema_extra={'example': "medium"})
     status: Optional[Status] = Field(default="pending", json_schema_extra={'example': "pending"})
     due_date: Optional[date] = Field(default=date.today(), json_schema_extra={'example': "2025-12-31"})
+    user_id: int = Field(..., description="ID of the user who owns this task")
     
 class TaskUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=2, max_length=100, json_schema_extra={'example': "Buy groceries"})
@@ -53,3 +54,13 @@ class TaskResponse(BaseModel):
 
 class TaskListResponse(BaseModel):
     tasks: list[TaskResponse]
+
+
+class PaginatedTaskResponse(BaseModel):
+    """Paginated response for tasks with metadata"""
+    items: List[TaskResponse]
+    total: int
+    skip: int
+    limit: int
+    has_next: bool
+    has_previous: bool

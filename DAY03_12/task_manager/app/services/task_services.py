@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 from app.api.v1.schemas.tasks import TaskListResponse, TaskCreate, TaskResponse, TaskUpdate
 from app.core.tasks import generate_int_id
 # compatibility alias for tests that patch 'generate_id'
@@ -11,26 +11,49 @@ class TaskService:
     def __init__(self, uow: IUnitOfWork):
         self.uow = uow
 
-    async def list_tasks(self, status: Optional[str], due_date: Optional[date], search: Optional[str]) -> TaskListResponse:
-        """List all tasks according to filters provided"""
+    async def list_tasks(
+        self, 
+        status: Optional[str] = None, 
+        due_date: Optional[date] = None, 
+        search: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 100,
+        sort_by: str = "created_at",
+        sort_order: str = "desc"
+    ) -> Dict:
         try:
             async with self.uow:
-                tasks = await self.uow.tasks.get_all()
-
-                if status:
-                    tasks = [task for task in tasks if task.get("status") == status]
-                    if not tasks:
-                        raise HTTPException(status_code=404, detail="No tasks found")
+                # Get paginated tasks from repository
+                result = await self.uow.tasks.get_all(
+                    skip=skip,
+                    limit=limit,
+                    sort_by=sort_by,
+                    sort_order=sort_order,
+                    status_filter=status
+                )
+                
+                tasks = result["items"]
+                
+                # Apply additional filters (due_date and search)
                 if due_date:
                     tasks = [task for task in tasks if task.get("due_date") == due_date.isoformat()]
                     if not tasks:
                         raise HTTPException(status_code=404, detail="No tasks found")
+                
                 if search:
                     tasks = [task for task in tasks if search.lower() in task.get("title", "").lower()]
                     if not tasks:
                         raise HTTPException(status_code=404, detail="No tasks found")
-
-                return TaskListResponse(tasks=[TaskResponse.model_validate(task) for task in tasks])
+                
+                # Return paginated response
+                return {
+                    "tasks": tasks,
+                    "total": result["total"],
+                    "skip": result["skip"],
+                    "limit": result["limit"],
+                    "has_next": result["has_next"],
+                    "has_previous": result["has_previous"]
+                }
         except HTTPException:
             # Re-raise HTTPExceptions created by service logic (404 etc.)
             raise
