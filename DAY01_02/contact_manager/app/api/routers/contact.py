@@ -7,7 +7,7 @@ from typing import Optional
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
-#list contacts with optional sorting
+
 @router.get("/list",status_code=200)
 async def get_contacts(sort_by:Optional[str] = Query("name",description="Field to sort contacts by name or email")):
 	contacts = await read_contacts()

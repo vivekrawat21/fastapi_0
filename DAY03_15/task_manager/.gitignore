@@ -1,6 +1,6 @@
 # Virtual environments
-.menv/
 venv/
+.myenv/
 
 # Python cache and compiled files
 __pycache__/

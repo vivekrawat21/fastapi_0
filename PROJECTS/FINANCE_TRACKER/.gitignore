@@ -1,5 +1,5 @@
 # Virtual environments
-myenv/
+.myenv/
 venv/
 
 # Python cache and compiled files
@@ -27,5 +27,3 @@ pip-wheel-metadata/
 
 # Logs
 *.log
-
-*.myenv
