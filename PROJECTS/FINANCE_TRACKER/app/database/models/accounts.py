@@ -6,9 +6,7 @@ from app.database.base import Base
 
 class AccountType(str, enum.Enum):
     SAVINGS = "savings"
-    CHECKING = "checking"
     CREDIT = "credit"
-    INVESTMENT = "investment"
 
 
 class Account(Base):
