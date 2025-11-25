@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String,  Text, Boolean, DateTime, func, Enum as SQLEnum, ForeignKey
+from sqlalchemy import Column, Integer, String,  Text, Boolean, DateTime, Date, func, Enum as SQLEnum, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from app.api.v1.schemas.tasks import Priority, Status
@@ -14,7 +14,7 @@ class Task(Base):
     description = Column(Text, nullable=True)
     priority = Column(SQLEnum(Priority, name='task_priority'), default=Priority.medium)
     status = Column(SQLEnum(Status, name='task_status'), default=Status.pending)
-    due_date = Column(DateTime, nullable=True)
+    due_date = Column(Date, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)

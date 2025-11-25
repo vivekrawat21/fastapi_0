@@ -8,7 +8,7 @@ from app.dependencies import get_task_service
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
-@router.get("", response_model=PaginatedTaskResponse, status_code=200)
+@router.get("/", response_model=PaginatedTaskResponse, status_code=200)
 async def list_tasks(
     status: Optional[str] = Query(None, description="Filter tasks by status"),
     due_date: Optional[date] = Query(None, description="Filter tasks by due date"),

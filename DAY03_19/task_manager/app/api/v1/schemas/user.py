@@ -32,6 +32,9 @@ class UserResponse(BaseModel):
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
+    class Config:
+        from_attributes = True
+
 
 class UserListResponse(BaseModel):
     """Schema for user list response."""

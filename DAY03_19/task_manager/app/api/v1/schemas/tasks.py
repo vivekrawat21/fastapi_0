@@ -51,6 +51,9 @@ class TaskResponse(BaseModel):
     status: Status
     due_date: Optional[date]
 
+    class Config:
+        from_attributes = True
+
 
 class TaskListResponse(BaseModel):
     tasks: list[TaskResponse]
