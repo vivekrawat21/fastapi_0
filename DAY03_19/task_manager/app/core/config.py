@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     
     frontend_cors_origins: list = ["http://localhost:3000", "http://localhost:3001", "http://localhost:5173"]
 
+    # JWT Settings
+    secret_key: str = "your-super-secret-key-change-in-production"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+
     sqlite_file: str = "./task_manager.db"
 
     class Config:

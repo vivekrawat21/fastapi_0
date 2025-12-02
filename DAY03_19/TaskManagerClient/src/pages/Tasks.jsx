@@ -6,17 +6,21 @@ const Tasks = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
+    
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     }
   }, [])
 
-  if (!user) return <div>Please login first</div>
-
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">All Tasks</h1>
-      <TaskList userId={user.id} />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">All Tasks</h1>
+          <p className="text-gray-400 mt-1">View and manage all your tasks</p>
+        </div>
+        <TaskList userId={user?.id} />
+      </div>
     </div>
   )
 }

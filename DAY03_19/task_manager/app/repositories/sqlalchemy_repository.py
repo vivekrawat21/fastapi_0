@@ -16,8 +16,8 @@ class SQLAlchemyTaskRepository(ITaskRepository):
             "user_id": task.user_id, 
             "title": task.title,
             "description": task.description,
-            "priority": task.priority.value if task.priority else None,
-            "status": task.status.value if task.status else None,
+            "priority": task.priority,
+            "status": task.status,
             "due_date": task.due_date if task.due_date else None,
         }
         

@@ -1,14 +1,16 @@
 from fastapi import APIRouter, Query, Path, HTTPException, Depends
 from app.api.v1.schemas.tasks import TaskCreate, TaskUpdate, TaskResponse, PaginatedTaskResponse
+from app.api.v1.schemas.user import UserResponse
 from app.services.task_services import TaskService
 from datetime import date
 from typing import Optional, List
-from app.dependencies import get_task_service
+from app.dependencies import get_task_service, get_current_user
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
-@router.get("/", response_model=PaginatedTaskResponse, status_code=200)
+@router.get("", response_model=PaginatedTaskResponse, status_code=200)
+@router.get("/", response_model=PaginatedTaskResponse, status_code=200, include_in_schema=False)
 async def list_tasks(
     status: Optional[str] = Query(None, description="Filter tasks by status"),
     due_date: Optional[date] = Query(None, description="Filter tasks by due date"),
@@ -16,8 +18,9 @@ async def list_tasks(
     skip: int = Query(0, ge=0, description="Number of tasks to skip for pagination"),
     limit: int = Query(100, ge=1, le=1000, description="Number of tasks to return (max 1000)"),
     sort_by: str = Query("created_at", description="Field to sort by"),
-    sort_order: str = Query("desc", regex="^(asc|desc)$", description="Sort order: asc or desc"),
-    task_service: TaskService = Depends(get_task_service)
+    sort_order: str = Query("desc", description="Sort order: asc or desc"),
+    task_service: TaskService = Depends(get_task_service),
+    current_user=Depends(get_current_user)
 ):
     """List all tasks with pagination, filtering, and sorting"""
     result = await task_service.list_tasks(
@@ -45,35 +48,39 @@ async def list_tasks(
 @router.post("/", response_model=TaskResponse, status_code=201)
 async def create_task(
     task_create: TaskCreate,
+    current_user: UserResponse = Depends(get_current_user),
     task_service: TaskService = Depends(get_task_service)
 ):
-    """Create a new task"""
-    return await task_service.create_task(task_create)
+    """Create a new task (requires authentication)"""
+    return await task_service.create_task(task_create, user_id=current_user.id)
 
 
 @router.delete("/{task_id}", status_code=204)
 async def delete_task(
     task_id: int = Path(..., description="The ID of the task to delete"),
+    current_user: UserResponse = Depends(get_current_user),
     task_service: TaskService = Depends(get_task_service)
 ):
     """Delete a task by its ID"""
-    await task_service.delete_task(task_id)
+    await task_service.delete_task(str(task_id))
 
 
 @router.put("/{task_id}", response_model=TaskResponse, status_code=200)
 async def update_task(
     task_id: int = Path(..., description="The ID of the task to update"),
     task_update: TaskUpdate = ...,
+    current_user: UserResponse = Depends(get_current_user),
     task_service: TaskService = Depends(get_task_service)
 ):
     """Update a task by its ID"""
-    return await task_service.update_task(task_id, task_update)
+    return await task_service.update_task(str(task_id), task_update)
 
 
 @router.get("/{task_id}", response_model=TaskResponse, status_code=200)
 async def get_task(
     task_id: int = Path(..., description="The ID of the task to retrieve"),
+    current_user: UserResponse = Depends(get_current_user),
     task_service: TaskService = Depends(get_task_service)
 ):
     """Get a task by its ID"""
-    return await task_service.get_task_by_id(task_id)
+    return await task_service.get_task_by_id(str(task_id))

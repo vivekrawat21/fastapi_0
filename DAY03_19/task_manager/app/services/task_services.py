@@ -56,11 +56,12 @@ class TaskService:
             raise HTTPException(status_code=500, detail=str(e))
         
 
-    async def create_task(self, task_data: TaskCreate) -> TaskResponse:
-        """Create a new task"""
+    async def create_task(self, task_data: TaskCreate, user_id: int) -> TaskResponse:
+        """Create a new task associated with a user"""
         try:
             async with self.uow:
                 task_dict = task_data.model_dump()
+                task_dict["user_id"] = user_id  
                 
                 created_task = await self.uow.tasks.add(task_dict)
                 await self.uow.commit()
@@ -71,47 +72,46 @@ class TaskService:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    async def update_task(self, task_id: int, task_data: TaskUpdate) -> TaskResponse:
+    async def update_task(self, task_id: str, task_data: TaskUpdate) -> TaskResponse:
         """Update an existing task by its ID"""
         try:
             async with self.uow:
-                existing_task = await self.uow.tasks.get_by_id(str(task_id))
+                existing_task = await self.uow.tasks.get_by_id(task_id)
                 if not existing_task:
                     raise HTTPException(status_code=404, detail="Task not found")
 
                 updated_data = task_data.model_dump(exclude_unset=True)
-                existing_task.update(updated_data)
-
-                await self.uow.tasks.update(str(task_id), existing_task)
+                
+                updated_task = await self.uow.tasks.update(task_id, updated_data)
                 await self.uow.commit()
 
-                return TaskResponse.model_validate(existing_task)
+                return TaskResponse.model_validate(updated_task)
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
         
         
-    async def delete_task(self, task_id: int) -> None:
+    async def delete_task(self, task_id: str) -> None:
         """Delete a task by its ID"""
         try:
             async with self.uow:
-                existing_task = await self.uow.tasks.get_by_id(str(task_id))
+                existing_task = await self.uow.tasks.get_by_id(task_id)
                 if not existing_task:
                     raise HTTPException(status_code=404, detail="Task not found")
 
-                await self.uow.tasks.delete(str(task_id))
+                await self.uow.tasks.delete(task_id)
                 await self.uow.commit()
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-    async def get_task_by_id(self, task_id: int) -> TaskResponse:
+    async def get_task_by_id(self, task_id: str) -> TaskResponse:
         """Get a single task by its ID"""
         try:
             async with self.uow:
-                task = await self.uow.tasks.get_by_id(str(task_id))
+                task = await self.uow.tasks.get_by_id(task_id)
                 if not task:
                     raise HTTPException(status_code=404, detail="Task not found")
 

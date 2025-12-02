@@ -9,10 +9,12 @@ class UserBase(BaseModel):
     """Base user schema with common fields."""
     name: str = Field(..., min_length=2, max_length=100, json_schema_extra={'example': "John Doe"})
     email: str = Field(..., min_length=5, max_length=254, json_schema_extra={'example': "john.doe@example.com"})
+    
 
 
 class UserCreate(UserBase):
     """Schema for creating a new user."""
+    password: str = Field(..., min_length=8, max_length=128, json_schema_extra={'example': "strongpassword123"})
     pass
 
 

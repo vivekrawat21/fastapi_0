@@ -9,7 +9,7 @@ from app.middleware.exception_middleware import exception_middleware_factory
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title=settings.app_name)
+    app = FastAPI(title=settings.app_name, redirect_slashes=True)
 
     app.add_middleware(
         CORSMiddleware,

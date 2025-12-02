@@ -31,7 +31,7 @@ class TaskCreate(BaseModel):
     priority: Optional[Priority] = Field(default="medium", json_schema_extra={'example': "medium"})
     status: Optional[Status] = Field(default="pending", json_schema_extra={'example': "pending"})
     due_date: Optional[date] = Field(default=date.today(), json_schema_extra={'example': "2025-12-31"})
-    user_id: int = Field(..., description="ID of the user who owns this task")
+    user_id: Optional[int] = Field(None, description="ID of the user who owns this task")
     
 class TaskUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=2, max_length=100, json_schema_extra={'example': "Buy groceries"})
