@@ -3,12 +3,21 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Union
 from datetime import datetime
+from enum import Enum
+
+
+class UserRole(str, Enum):
+    """User role enumeration."""
+    ADMIN = "Admin"
+    COLLECTOR = "Collector"
+    SUPERVISOR = "Supervisor"
 
 
 class UserBase(BaseModel):
     """Base user schema with common fields."""
     name: str = Field(..., min_length=2, max_length=100, json_schema_extra={'example': "John Doe"})
     email: str = Field(..., min_length=5, max_length=254, json_schema_extra={'example': "john.doe@example.com"})
+    role: UserRole = Field(default=UserRole.COLLECTOR, json_schema_extra={'example': "Collector"})
     
 
 
@@ -30,6 +39,7 @@ class UserResponse(BaseModel):
     id: Union[int, str]
     name: str
     email: str
+    role: UserRole
     is_active: bool = True
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None

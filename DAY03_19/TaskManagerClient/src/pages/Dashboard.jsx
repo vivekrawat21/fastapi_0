@@ -14,7 +14,7 @@ const Dashboard = () => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-20">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-900 to-indigo-900 pt-20">
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
@@ -36,14 +36,12 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Dashboard Grid */}
         <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-          {/* Task Form */}
+
           <div className="lg:col-span-1">
             <TaskForm onTaskCreated={handleTaskCreated} />
           </div>
 
-          {/* Task List */}
           <div className="lg:col-span-2">
             <TaskList key={refreshKey} />
           </div>

@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String,  Text, Boolean, DateTime, Date, 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from app.api.v1.schemas.tasks import Priority, Status
+from app.api.v1.schemas.user import UserRole
 
 Base = declarative_base()
 
@@ -27,6 +28,7 @@ class User(Base):
     name = Column(String(50), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     password  = Column(String(255), nullable=False)
+    role = Column(SQLEnum(UserRole, name='user_role'), default=UserRole.COLLECTOR)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

@@ -26,8 +26,6 @@ const App = () => {
         <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       </Route>
-
-      
     </Routes>
   )
 }

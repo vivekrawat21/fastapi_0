@@ -18,7 +18,7 @@ class UserService:
             raise HTTPException(status_code=400, detail="Email already registered")
         
         hashed_password = hash_password(user_create.password)
-        user = User(name=user_create.name, email=user_create.email, password=hashed_password) 
+        user = User(name=user_create.name, email=user_create.email, password=hashed_password, role=user_create.role) 
         
         try:
             created_user = await self.user_repository.create(user)
@@ -34,14 +34,14 @@ class UserService:
         except IntegrityError:
             raise HTTPException(status_code=400, detail="Email already registered")
             
-    async def create_user_auth(self, name: str, email: str, password: str) -> UserResponse:
+    async def create_user_auth(self, name: str, email: str, password: str, role: str = "Collector") -> UserResponse:
         db_user = await self.user_repository.get_by_email(email)
         
         if db_user:
             raise HTTPException(status_code=400, detail="Email already registered")
         
         hashed_password = hash_password(password)
-        user = User(name=name, email=email, password=hashed_password) 
+        user = User(name=name, email=email, password=hashed_password, role=role)
         
         try:
             created_user = await self.user_repository.create(user)
