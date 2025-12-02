@@ -8,9 +8,9 @@ from enum import Enum
 
 class UserRole(str, Enum):
     """User role enumeration."""
-    ADMIN = "Admin"
-    COLLECTOR = "Collector"
-    SUPERVISOR = "Supervisor"
+    ADMIN = "ADMIN"
+    COLLECTOR = "COLLECTOR"
+    SUPERVISOR = "SUPERVISOR"
 
 
 class UserBase(BaseModel):

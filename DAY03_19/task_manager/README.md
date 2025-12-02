@@ -1,142 +1,350 @@
-# Task Manager (FastAPI)
+# Task Manager API (FastAPI)
 
-A production-ready task management API built with FastAPI, following Clean Architecture and SOLID principles. Stores tasks in a JSON file with async I/O, includes CRUD operations, filtering, error handling, and testing. Features dependency injection and service interfaces for maintainability.
+A production-ready task management API built with FastAPI, featuring JWT authentication with role-based access control, MySQL database with SQLAlchemy ORM, and Clean Architecture principles.
 
 ---
 
-## Quick highlights
-- FastAPI app with file-based persistence (`tasks.json`) and async operations.
-- Clean Architecture: Separated into routers (endpoints), schemas (Pydantic models), services (business logic with interfaces), utils (file I/O), and core (config, helpers).
-- SOLID principles: Dependency injection, interface segregation, single responsibility.
-- Full CRUD: Create, read, update, delete tasks with validation.
-- Filtering: By status, due_date, and title search.
-- Auto-docs: Swagger UI at `/docs`, ReDoc at `/redoc`.
-- Testing: Unit and integration tests with pytest + httpx.
-- Error handling: Global middleware for exceptions.
+## Quick Highlights
+
+- **FastAPI** with async SQLAlchemy and MySQL database
+- **JWT Authentication** with role-based access (Admin, Collector, Supervisor)
+- **Clean Architecture**: Separated into routers, schemas, services, repositories, and models
+- **SOLID Principles**: Dependency injection, interface segregation, single responsibility
+- **Full CRUD**: Create, read, update, delete tasks with validation
+- **User Management**: Registration, login, role assignment
+- **Filtering**: By status, due_date, priority, and title search
+- **Auto-docs**: Swagger UI at `/docs`, ReDoc at `/redoc`
+- **Alembic Migrations**: Database version control
+- **Error Handling**: Global middleware for exceptions
+
+---
+
+## Features
+
+### ✅ Authentication & Authorization
+- JWT token-based authentication
+- Password hashing with Argon2
+- Role-based access control:
+  - **ADMIN**: Full access to all resources
+  - **COLLECTOR**: Standard user access
+  - **SUPERVISOR**: Elevated permissions
+- Token includes user role in claims
+
+### ✅ Task Management
+- Create, read, update, delete tasks
+- Task fields: title, description, status, priority, due_date
+- Automatic user association via JWT
+- Filter tasks by status, priority, due date
+
+### ✅ User Management
+- User registration with role selection
+- Secure login with JWT tokens
+- User profile with role information
 
 ---
 
 ## Architecture Overview
-- **Routers** (`app/api/v1/routes/`): API endpoints with dependency injection.
-- **Schemas** (`app/api/v1/schemas/`): Pydantic models for request/response validation.
-- **Services** (`app/services/`): Business logic implementing interfaces (e.g., `TaskService` implements `TaskServiceInterface`).
-- **Interfaces** (`app/services/interfaces/`): Abstract base classes defining contracts (e.g., `TaskServiceInterface` with abstract methods).
-- **Utils** (`app/utils/`): File I/O helpers with custom JSON serialization.
-- **Core** (`app/core/`): Config (Pydantic settings) and helpers (e.g., UUID generation).
-- **Dependency Injection**: Routes inject services via `Depends()`, promoting testability and loose coupling.
+
+```
+app/
+├── main.py                 # FastAPI app with middleware
+├── dependencies.py         # Dependency injection
+├── unit_of_work.py         # Unit of Work pattern
+├── api/
+│   └── v1/
+│       ├── routes/
+│       │   ├── auth.py     # Authentication endpoints
+│       │   ├── tasks.py    # Task CRUD endpoints
+│       │   └── health.py   # Health check
+│       └── schemas/
+│           ├── tasks.py    # Task Pydantic models
+│           └── user.py     # User models with UserRole enum
+├── core/
+│   ├── config.py           # Pydantic settings
+│   ├── database.py         # SQLAlchemy async setup
+│   ├── models.py           # SQLAlchemy ORM models
+│   └── security.py         # JWT & password utilities
+├── services/
+│   ├── task_services.py    # Task business logic
+│   └── user_services.py    # User business logic
+├── repositories/
+│   └── sqlalchemy_repository.py  # Generic repository pattern
+└── middleware/
+    └── exception_handler.py  # Global error handling
+```
 
 ---
 
-## Folder structure
+## Tech Stack
 
-```
-DAY03_04/task_manager/
-├─ app/
-│  ├─ __init__.py
-│  ├─ main.py                # FastAPI app with middleware
-│  ├─ api/
-│  │  ├─ __init__.py
-│  │  ├─ v1/
-│  │     ├─ __init__.py
-│  │     ├─ routes/
-│  │     │  ├─ __init__.py
-│  │     │  ├─ health.py     # health check
-│  │     │  └─ tasks.py     # task CRUD routes with DI
-│  │     └─ schemas/
-│  │        ├─ __init__.py
-│  │        └─ tasks.py     # Pydantic models (Task, TaskCreate, etc.)
-│  ├─ services/
-│  │  ├─ __init__.py
-│  │  ├─ interfaces/
-│  │  │  ├─ __init__.py
-│  │  │  └─ task_service_interfaces.py  # ABC for TaskService
-│  │  └─ task_services.py   # TaskService implementation
-│  ├─ utils/
-│  │  ├─ __init__.py
-│  │  └─ files_io.py        # async read/write to tasks.json
-│  ├─ core/
-│  │  ├─ __init__.py
-│  │  ├─ config.py          # Pydantic settings
-│  │  └─ tasks.py           # UUID generation
-│  ├─ database/
-│  │  └─ __init__.py        # placeholder for future DB layer
-│  ├─ tests/
-│  │  ├─ __init__.py
-│  │  └─ test_health.py     # pytest tests
-│  └─ tasks.json            # data file
-├─ requirements.txt
-├─ TaskManager-RSVR.postman_collection.json  # API tests
-├─ .gitignore
-└─ .myenv/                   # virtualenv (ignore in git)
-```
+- **Framework**: FastAPI
+- **Database**: MySQL with async SQLAlchemy
+- **Migrations**: Alembic
+- **Authentication**: JWT (python-jose)
+- **Password Hashing**: Argon2 (passlib)
+- **Validation**: Pydantic v2
+- **ASGI Server**: Uvicorn
 
 ---
 
 ## Prerequisites
-- Python 3.10+ (tested on 3.12).
-- Virtual environment: Use included `.myenv/` or create new:
+
+- Python 3.10+ (tested on 3.12)
+- MySQL 8.0+
+- Virtual environment recommended
+
+---
+
+## Installation
 
 ```bash
+# Navigate to project
+cd DAY03_19/task_manager
+
+# Create virtual environment
 python3 -m venv venv
 source venv/bin/activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your MySQL credentials
+```
+
+### Environment Variables
+
+```env
+DATABASE_URL=mysql+aiomysql://user:password@localhost:3306/taskmanager
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
 ---
 
-## Running the app (development)
-
-From project root:
+## Database Setup
 
 ```bash
-source .myenv/bin/activate
-.myenv/bin/uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+# Run migrations
+alembic upgrade head
 ```
 
-- Docs: http://127.0.0.1:8000/docs (Swagger) or /redoc.
-- Health: GET http://127.0.0.1:8000/health
+---
+
+## Running the App
+
+```bash
+# Development
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
+# Production
+uvicorn app.main:app --host 0.0.0.0 --port 8000
+```
+
+- **Swagger UI**: http://127.0.0.1:8000/docs
+- **ReDoc**: http://127.0.0.1:8000/redoc
+- **Health Check**: GET http://127.0.0.1:8000/api/v1/health
 
 ---
 
 ## API Endpoints
 
-- GET `/api/v1/health` — Health check.
-- GET `/api/v1/tasks/` — List tasks with filtering.
-- GET `/api/v1/tasks/{id}` — Fetch single task.
-- POST `/api/v1/tasks/` — Create new task.
-- PUT `/api/v1/tasks/{id}` — Update task.
-- DELETE `/api/v1/tasks/{id}` — Delete task.
+### Authentication
 
-Examples:
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/api/v1/auth/register` | Register new user | No |
+| POST | `/api/v1/auth/login` | Login and get JWT | No |
+
+### Tasks
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/v1/tasks/` | List all tasks | Yes |
+| GET | `/api/v1/tasks/{id}` | Get single task | Yes |
+| POST | `/api/v1/tasks/` | Create new task | Yes |
+| PUT | `/api/v1/tasks/{id}` | Update task | Yes |
+| DELETE | `/api/v1/tasks/{id}` | Delete task | Yes |
+
+### Health
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/api/v1/health` | Health check | No |
+
+---
+
+## API Examples
+
+### Register User
 
 ```bash
-# List pending tasks
-curl "http://127.0.0.1:8000/api/v1/tasks/?status=pending"
+curl -X POST http://127.0.0.1:8000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@example.com",
+    "password": "securepassword",
+    "role": "COLLECTOR"
+  }'
+```
 
-# Create task
+**Response:**
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "role": "COLLECTOR"
+}
+```
+
+### Login
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/auth/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=user@example.com&password=securepassword"
+```
+
+**Response:**
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer"
+}
+```
+
+### Create Task
+
+```bash
 curl -X POST http://127.0.0.1:8000/api/v1/tasks/ \
   -H "Content-Type: application/json" \
-  -d '{"title":"New Task","description":"Desc","priority":"high","status":"pending","due_date":"2025-12-01"}'
+  -H "Authorization: Bearer <your-token>" \
+  -d '{
+    "title": "New Task",
+    "description": "Task description",
+    "priority": "high",
+    "status": "pending",
+    "due_date": "2025-12-01"
+  }'
+```
+
+### List Tasks with Filters
+
+```bash
+# Filter by status
+curl "http://127.0.0.1:8000/api/v1/tasks/?status=pending" \
+  -H "Authorization: Bearer <your-token>"
+
+# Filter by priority
+curl "http://127.0.0.1:8000/api/v1/tasks/?priority=high" \
+  -H "Authorization: Bearer <your-token>"
 ```
 
 ---
 
-## Data persistence
-- Tasks stored in `tasks.json` (absolute path in `files_io.py`).
-- Async I/O with `aiofiles`; custom JSON encoder for dates.
+## User Roles
+
+The system supports three user roles defined in the `UserRole` enum:
+
+| Role | Value | Description |
+|------|-------|-------------|
+| ADMIN | `"ADMIN"` | Full administrative access |
+| COLLECTOR | `"COLLECTOR"` | Standard user (default) |
+| SUPERVISOR | `"SUPERVISOR"` | Elevated permissions |
+
+Roles are stored in MySQL as an ENUM type and included in JWT token claims.
+
+---
+
+## Database Models
+
+### User Model
+
+```python
+class User(Base):
+    id: int (primary key)
+    email: str (unique)
+    password: str (hashed)
+    role: UserRole (default: COLLECTOR)
+    tasks: relationship -> Task[]
+```
+
+### Task Model
+
+```python
+class Task(Base):
+    id: int (primary key)
+    title: str
+    description: str (optional)
+    status: str (pending/in_progress/completed)
+    priority: str (low/medium/high)
+    due_date: date
+    user_id: int (foreign key -> User.id)
+    user: relationship -> User
+```
+
+---
+
+## Migrations
+
+```bash
+# Create new migration
+alembic revision --autogenerate -m "description"
+
+# Apply migrations
+alembic upgrade head
+
+# Rollback one version
+alembic downgrade -1
+
+# View current version
+alembic current
+```
 
 ---
 
 ## Testing
-- Run tests: `pytest` (requires pytest, httpx in requirements).
-- Covers unit tests for routes and services.
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=app
+
+# Run specific test file
+pytest app/tests/test_auth.py -v
+```
+
+---
+
+## Recent Updates
+
+### v2.0.0
+- ✅ JWT Authentication with role claims
+- ✅ Role-based access control (Admin, Collector, Supervisor)
+- ✅ User registration with role selection
+- ✅ Fixed task creation to get user_id from JWT
+- ✅ Fixed task update logic in service layer
+- ✅ MySQL enum case sensitivity fix
+- ✅ Alembic migrations for role column
+- ✅ Argon2 password hashing
 
 ---
 
 ## Contribution
-- Follow Clean Architecture; add tests for new features.
-- Commit with conventional style (e.g., `feat: add task creation`).
+
+- Follow Clean Architecture; add tests for new features
+- Commit with conventional style (e.g., `feat: add task creation`)
 
 ---
-Happy coding!</content>
-<parameter name="filePath">/home/vivek-rawat/Desktop/RSVR/fastapi_0/DAY03_04/task_manager/README.md
+
+## License
+
+MIT
+
+---
+
+Happy coding!

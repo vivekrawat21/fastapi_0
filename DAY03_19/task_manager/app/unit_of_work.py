@@ -7,7 +7,7 @@ from app.utils.files_io import write_tasks
 from app.core.database import AsyncSessionLocal
 
 class IUnitOfWork(ABC):
-    tasks: ITaskRepository  # Changed to use interface instead of concrete type
+    tasks: ITaskRepository  
 
     @abstractmethod
     async def __aenter__(self):

@@ -16,7 +16,7 @@ class RegisterRequest(BaseModel):
     email: str
     name: str
     password: str
-    role: str = "Collector"
+    role: str = "COLLECTOR"
 
 class LoginResponse(BaseModel):
     type: Optional[str] = "Bearer"
