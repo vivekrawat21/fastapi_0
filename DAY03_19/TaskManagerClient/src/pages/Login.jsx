@@ -1,36 +1,34 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { authAPI } from '../api/api'
+import { useDispatch, useSelector } from 'react-redux'
+import { login, clearError, selectAuthLoading, selectAuthError, selectIsAuthenticated } from '../store/slices/authSlice'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+  
+  const loading = useSelector(selectAuthLoading)
+  const error = useSelector(selectAuthError)
+  const isAuthenticated = useSelector(selectIsAuthenticated)
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard')
+    }
+  }, [isAuthenticated, navigate])
+
+  useEffect(() => {
+    // Clear errors when component mounts
+    dispatch(clearError())
+  }, [dispatch])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      const response = await authAPI.login(email, password)
-      localStorage.setItem('access_token', response.data.access_token)
-      localStorage.setItem('user', JSON.stringify({ email }))
-      navigate('/dashboard')
-    } catch (error) {
-      console.error('Login failed:', error)
-      if (error.response?.status === 404) {
-        setError('User not found. Please register first.')
-      } else if (error.response?.status === 401) {
-        setError('Invalid password. Please try again.')
-      } else {
-        setError(error.response?.data?.detail || 'Login failed. Please try again.')
-      }
-    } finally {
-      setLoading(false)
-    }
+    dispatch(login({ email, password }))
   }
 
   return (

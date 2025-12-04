@@ -1,8 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import { selectIsAuthenticated } from '../store/slices/authSlice'
 
 const Hero = () => {
-  const user = localStorage.getItem('user')
+  const isAuthenticated = useSelector(selectIsAuthenticated)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
@@ -36,16 +38,24 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-              {user ? (
-                <Link
-                  to="/dashboard"
-                  className="group inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all shadow-2xl shadow-white/20"
-                >
-                  Go to Dashboard
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </Link>
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    to="/dashboard"
+                    className="group inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all shadow-2xl shadow-white/20"
+                  >
+                    Go to Dashboard
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </Link>
+                  <Link
+                    to="/payment"
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-slate-900 px-8 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-all shadow-lg shadow-yellow-500/20"
+                  >
+                    View Pricing
+                  </Link>
+                </>
               ) : (
                 <>
                   <Link
@@ -62,6 +72,12 @@ const Hero = () => {
                     className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/10 transition-all"
                   >
                     Sign In
+                  </Link>
+                  <Link
+                    to="/payment"
+                    className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-400 text-slate-900 px-6 py-3 rounded-xl font-semibold text-lg hover:opacity-90 transition-all"
+                  >
+                    View Pricing
                   </Link>
                 </>
               )}

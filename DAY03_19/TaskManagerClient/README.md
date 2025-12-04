@@ -186,7 +186,6 @@ pnpm lint
 
 ## Recent Updates
 
-### v2.0.0
 - ✅ Implemented JWT authentication with role claims
 - ✅ Added role-based access (Admin, Collector, Supervisor)
 - ✅ Created ProtectedRoute and PublicRoute components

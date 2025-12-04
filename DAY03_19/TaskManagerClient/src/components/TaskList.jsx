@@ -1,47 +1,46 @@
-import React, { useEffect, useState } from 'react'
-import { tasksAPI } from '../api/api'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { 
+  fetchTasks, 
+  updateTask, 
+  deleteTask, 
+  setFilter,
+  clearError,
+  selectFilteredTasks,
+  selectTasksLoading,
+  selectTasksError,
+  selectTasksFilter,
+  selectTasks,
+} from '../store/slices/tasksSlice'
 
-const TaskList = ({ userId, onRefresh }) => {
-  const [tasks, setTasks] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState('all')
-  const [error, setError] = useState('')
+const TaskList = () => {
+  const dispatch = useDispatch()
+  
+  const allTasks = useSelector(selectTasks)
+  const tasks = useSelector(selectFilteredTasks)
+  const loading = useSelector(selectTasksLoading)
+  const error = useSelector(selectTasksError)
+  const filter = useSelector(selectTasksFilter)
 
   useEffect(() => {
-    fetchTasks()
-  }, [userId])
+    dispatch(fetchTasks())
+  }, [dispatch])
 
-  const fetchTasks = async () => {
-    setError('')
-    try {
-      const response = await tasksAPI.getAll()
-      setTasks(response.data.items || response.data || [])
-    } catch (error) {
-      console.error('Error fetching tasks:', error)
-      setError('Failed to load tasks. Please try again.')
-    } finally {
-      setLoading(false)
-    }
+  const handleUpdateStatus = (id, status) => {
+    dispatch(updateTask({ id, data: { status } }))
   }
 
-  const updateTaskStatus = async (id, status) => {
-    try {
-      await tasksAPI.update(id, { status })
-      setTasks(tasks.map(task => task.id === id ? { ...task, status } : task))
-    } catch (error) {
-      console.error('Error updating task:', error)
-      setError('Failed to update task.')
-    }
+  const handleDelete = (id) => {
+    dispatch(deleteTask(id))
   }
 
-  const deleteTask = async (id) => {
-    try {
-      await tasksAPI.delete(id)
-      setTasks(tasks.filter(task => task.id !== id))
-    } catch (error) {
-      console.error('Error deleting task:', error)
-      setError('Failed to delete task.')
-    }
+  const handleFilterChange = (newFilter) => {
+    dispatch(setFilter(newFilter))
+  }
+
+  const handleRetry = () => {
+    dispatch(clearError())
+    dispatch(fetchTasks())
   }
 
   const priorityColors = {
@@ -55,10 +54,6 @@ const TaskList = ({ userId, onRefresh }) => {
     in_progress: 'bg-blue-500/20 text-blue-400',
     completed: 'bg-green-500/20 text-green-400'
   }
-
-  const filteredTasks = filter === 'all' 
-    ? tasks 
-    : tasks.filter(task => task.status === filter)
 
   if (loading) {
     return (
@@ -76,7 +71,7 @@ const TaskList = ({ userId, onRefresh }) => {
         <div className="bg-red-500/20 border border-red-500/30 text-red-400 p-4 rounded-xl text-center">
           {error}
           <button 
-            onClick={fetchTasks}
+            onClick={handleRetry}
             className="ml-4 text-blue-400 hover:underline"
           >
             Retry
@@ -97,7 +92,7 @@ const TaskList = ({ userId, onRefresh }) => {
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">Your Tasks</h2>
-            <p className="text-sm text-gray-400">{tasks.length} total tasks</p>
+            <p className="text-sm text-gray-400">{allTasks.length} total tasks</p>
           </div>
         </div>
       </div>
@@ -106,7 +101,7 @@ const TaskList = ({ userId, onRefresh }) => {
         {['all', 'pending', 'in_progress', 'completed'].map((status) => (
           <button
             key={status}
-            onClick={() => setFilter(status)}
+            onClick={() => handleFilterChange(status)}
             className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
               filter === status
                 ? 'bg-blue-500 text-white'
@@ -118,7 +113,7 @@ const TaskList = ({ userId, onRefresh }) => {
         ))}
       </div>
 
-      {filteredTasks.length === 0 ? (
+      {tasks.length === 0 ? (
         <div className="text-center py-12">
           <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +124,7 @@ const TaskList = ({ userId, onRefresh }) => {
         </div>
       ) : (
         <div className="space-y-3">
-          {filteredTasks.map(task => (
+          {tasks.map(task => (
             <div
               key={task.id}
               className={`p-4 rounded-xl border transition-all hover:border-white/20 ${
@@ -170,7 +165,7 @@ const TaskList = ({ userId, onRefresh }) => {
                 <div className="flex items-center gap-2">
                   <select
                     value={task.status}
-                    onChange={(e) => updateTaskStatus(task.id, e.target.value)}
+                    onChange={(e) => handleUpdateStatus(task.id, e.target.value)}
                     className="px-3 py-2 border border-white/20 rounded-xl text-sm bg-white/10 text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="pending" className="bg-slate-800">Pending</option>
@@ -178,7 +173,7 @@ const TaskList = ({ userId, onRefresh }) => {
                     <option value="completed" className="bg-slate-800">Completed</option>
                   </select>
                   <button
-                    onClick={() => deleteTask(task.id)}
+                    onClick={() => handleDelete(task.id)}
                     className="p-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
                     title="Delete task"
                   >

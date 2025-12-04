@@ -1,17 +1,20 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { logout, selectUser, selectIsAuthenticated } from '../store/slices/authSlice'
 
 const NavBar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
+  const dispatch = useDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  
+  const user = useSelector(selectUser)
+  const isAuthenticated = useSelector(selectIsAuthenticated)
 
   const handleLogout = () => {
-    localStorage.removeItem('user')
-    localStorage.removeItem('access_token')
+    dispatch(logout())
     navigate('/')
-    window.location.reload()
   }
 
   const isActive = (path) => location.pathname === path
@@ -33,7 +36,7 @@ const NavBar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            {user ? (
+            {isAuthenticated ? (
               <>
                 <Link
                   to="/"
@@ -64,6 +67,16 @@ const NavBar = () => {
                   }`}
                 >
                   Tasks
+                </Link>
+                <Link
+                  to="/payment"
+                  className={`font-medium transition-colors px-4 py-2 rounded-lg ${
+                    isActive('/payment')
+                      ? 'text-yellow-400 bg-yellow-500/10'
+                      : 'text-gray-300 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  Pricing
                 </Link>
                 <div className="flex items-center gap-3 pl-4 border-l border-white/10">
                   <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
@@ -116,7 +129,7 @@ const NavBar = () => {
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-white/10">
-            {user ? (
+            {isAuthenticated ? (
               <div className="space-y-2">
                 <Link
                   to="/"
@@ -138,6 +151,13 @@ const NavBar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Tasks
+                </Link>
+                <Link
+                  to="/payment"
+                  className="block px-4 py-3 text-gray-300 hover:text-white hover:bg-white/10 rounded-xl transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Pricing
                 </Link>
                 <div className="border-t border-white/10 pt-3 mt-3">
                   <div className="px-4 py-2 text-gray-500 text-sm">Signed in as {user.name || user.email}</div>

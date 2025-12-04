@@ -1,16 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import { useSelector } from 'react-redux'
 import TaskList from '../components/TaskList'
+import { selectUser } from '../store/slices/authSlice'
 
 const Tasks = () => {
-  const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-  }, [])
+  const user = useSelector(selectUser)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 pt-20">
@@ -19,7 +13,7 @@ const Tasks = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-white">All Tasks</h1>
           <p className="text-gray-400 mt-1">View and manage all your tasks</p>
         </div>
-        <TaskList userId={user?.id} />
+        <TaskList />
       </div>
     </div>
   )

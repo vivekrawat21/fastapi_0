@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { authAPI } from '../api/api'
+import { useDispatch, useSelector } from 'react-redux'
+import { register, clearError, clearRegisterSuccess, selectAuthLoading, selectAuthError } from '../store/slices/authSlice'
 
 const Register = () => {
   const [name, setName] = useState('')
@@ -8,39 +9,44 @@ const Register = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [localError, setLocalError] = useState('')
+  
+  const dispatch = useDispatch()
   const navigate = useNavigate()
+  
+  const loading = useSelector(selectAuthLoading)
+  const error = useSelector(selectAuthError)
+  const registerSuccess = useSelector(state => state.auth.registerSuccess)
+
+  useEffect(() => {
+    dispatch(clearError())
+    dispatch(clearRegisterSuccess())
+  }, [dispatch])
+
+  useEffect(() => {
+    if (registerSuccess) {
+      navigate('/login')
+    }
+  }, [registerSuccess, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
+    setLocalError('')
     
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
+      setLocalError('Passwords do not match')
       return
     }
     
     if (password.length < 8) {
-      setError('Password must be at least 8 characters')
+      setLocalError('Password must be at least 8 characters')
       return
     }
     
-    setLoading(true)
-    try {
-      await authAPI.register(name, email, password)
-      navigate('/login')
-    } catch (error) {
-      console.error('Registration failed:', error)
-      if (error.response?.status === 400) {
-        setError('Email already registered. Please login.')
-      } else {
-        setError(error.response?.data?.detail || 'Registration failed. Please try again.')
-      }
-    } finally {
-      setLoading(false)
-    }
+    dispatch(register({ name, email, password }))
   }
+
+  const displayError = localError || error
 
   const passwordStrength = () => {
     if (password.length === 0) return { width: '0%', color: 'bg-gray-300', text: '' }
@@ -115,12 +121,12 @@ const Register = () => {
               <p className="text-gray-300 mt-2 text-sm">Join TaskManager for free</p>
             </div>
             
-            {error && (
+            {displayError && (
               <div className="bg-red-500/20 border border-red-500/50 text-red-200 p-3 rounded-xl mb-5 flex items-center gap-3">
                 <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-sm">{error}</span>
+                <span className="text-sm">{displayError}</span>
               </div>
             )}
 

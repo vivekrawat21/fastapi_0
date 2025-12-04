@@ -1,42 +1,48 @@
-import React, { useState } from 'react'
-import { tasksAPI } from '../api/api'
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { createTask, clearError } from '../store/slices/tasksSlice'
 
-const TaskForm = ({ userId, onTaskCreated }) => {
+const TaskForm = () => {
+  const dispatch = useDispatch()
+  const { isCreating, error } = useSelector((state) => state.tasks)
+  
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('medium')
   const [dueDate, setDueDate] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearError())
+    }
+  }, [dispatch])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
     setSuccess('')
-    setLoading(true)
+    
     try {
-      await tasksAPI.create({
+      await dispatch(createTask({
         title,
         description,
         priority,
         status: 'pending',
         due_date: dueDate || new Date().toISOString().split('T')[0],
-      })
+      })).unwrap()
+      
       setTitle('')
       setDescription('')
       setPriority('medium')
       setDueDate('')
       setSuccess('Task created successfully!')
-      if (onTaskCreated) onTaskCreated()
       setTimeout(() => setSuccess(''), 3000)
-    } catch (error) {
-      console.error('Error creating task:', error)
-      setError(error.response?.data?.detail || 'Failed to create task. Please try again.')
-    } finally {
-      setLoading(false)
+    } catch (err) {
+      console.error('Error creating task:', err)
     }
   }
+
+  const loading = isCreating
 
   const priorityColors = {
     low: 'bg-green-500/20 text-green-400 border-green-500/30',
