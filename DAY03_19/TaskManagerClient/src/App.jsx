@@ -12,7 +12,9 @@ import MainLayout from './Layouts/MainLayout.jsx'
 import Register from './pages/Register.jsx'
 import PublicRoute from './components/PublicRoute.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import RoleProtectedRoute from './components/RoleProtectedRoute.jsx'
 import Payment from './pages/Payment.jsx'
+import Admin from './pages/Admin.jsx'
 
 
 const App = () => {
@@ -32,10 +34,15 @@ const App = () => {
       </Route>
 
       <Route element={<MainLayout />}>
-      <Route path='/payment' element={<Payment />} />
+        <Route path='/payment' element={<Payment />} />
         <Route path="/" element={<Home />} />
         <Route path="/tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/admin" element={
+          <RoleProtectedRoute allowedRoles={['ADMIN', 'SUPERVISOR']}>
+            <Admin />
+          </RoleProtectedRoute>
+        } />
       </Route>
     </Routes>
   )

@@ -65,3 +65,23 @@ async def get_current_user(
         raise credentials_exception
     
     return UserResponse.model_validate(user)
+
+
+def require_role(*allowed_roles: str):
+    """Dependency factory to check if user has required role"""
+    async def role_checker(
+        current_user: UserResponse = Depends(get_current_user)
+    ) -> UserResponse:
+        if current_user.role.value not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Access denied. Required roles: {', '.join(allowed_roles)}"
+            )
+        return current_user
+    return role_checker
+
+
+# Pre-defined role dependencies
+get_admin_user = require_role("ADMIN")
+get_supervisor_user = require_role("ADMIN", "SUPERVISOR")
+get_admin_or_supervisor = require_role("ADMIN", "SUPERVISOR")

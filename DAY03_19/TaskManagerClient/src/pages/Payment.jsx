@@ -5,7 +5,12 @@ import { setBillingCycle, processPayment } from '../store/slices/paymentSlice'
 
 const Payment = () => {
   const dispatch = useDispatch()
-  const { billingCycle, plans, currentPlan, isProcessing } = useSelector((state) => state.payment)
+  const { billingCycle, plans, currentPlan, isProcessing, error, successMessage } = useSelector((state) => state.payment)
+  const { user } = useSelector((state) => state.auth)
+
+  // Determine current plan based on user role
+  const userRole = user?.role || 'COLLECTOR'
+  const effectiveCurrentPlan = userRole === 'SUPERVISOR' ? 'pro' : userRole === 'ADMIN' ? 'enterprise' : 'free'
 
   const handleBillingCycleChange = (cycle) => {
     dispatch(setBillingCycle(cycle))
@@ -15,13 +20,25 @@ const Payment = () => {
     dispatch(processPayment({ planId, billingCycle }))
   }
 
-  // Map plans to display format
-  const displayPlans = plans.map(plan => ({
-    ...plan,
-    cta: plan.id === 'free' ? 'Current Plan' : plan.id === 'pro' ? 'Upgrade to Pro' : 'Contact Sales',
-    highlighted: plan.id === 'pro',
-    disabled: plan.id === currentPlan,
-  }))
+  // Map plans to display format based on user role
+  const displayPlans = plans.map(plan => {
+    const isCurrentPlan = plan.id === effectiveCurrentPlan
+    let cta = 'Upgrade'
+    if (plan.id === 'free') {
+      cta = isCurrentPlan ? 'Current Plan' : 'Free Plan'
+    } else if (plan.id === 'pro') {
+      cta = isCurrentPlan ? 'Current Plan' : 'Upgrade to Pro'
+    } else {
+      cta = isCurrentPlan ? 'Current Plan' : 'Contact Sales'
+    }
+    
+    return {
+      ...plan,
+      cta,
+      highlighted: plan.id === 'pro',
+      disabled: isCurrentPlan || plan.id === 'enterprise',
+    }
+  })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 py-24">
@@ -32,6 +49,18 @@ const Payment = () => {
       </div>
 
       <div className="relative container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Error/Success Messages */}
+        {error && (
+          <div className="max-w-2xl mx-auto mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-400 text-center">
+            {error}
+          </div>
+        )}
+        {successMessage && (
+          <div className="max-w-2xl mx-auto mb-6 p-4 bg-green-500/20 border border-green-500/30 rounded-xl text-green-400 text-center">
+            {successMessage}
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6">

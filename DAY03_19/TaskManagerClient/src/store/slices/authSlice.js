@@ -100,6 +100,11 @@ const authSlice = createSlice({
       state.token = action.payload.token
       state.isAuthenticated = true
     },
+    updateUserRole: (state, action) => {
+      if (state.user) {
+        state.user.role = action.payload
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -172,5 +177,5 @@ export const selectAuthLoading = (state) => state.auth.isLoading
 export const selectAuthError = (state) => state.auth.error
 export const selectIsInitialized = (state) => state.auth.isInitialized
 
-export const { clearError, clearRegisterSuccess, setCredentials } = authSlice.actions
+export const { clearError, clearRegisterSuccess, setCredentials, updateUserRole } = authSlice.actions
 export default authSlice.reducer

@@ -2,7 +2,7 @@ from app.api.v1.schemas.user import UserCreate, UserResponse, UserUpdate
 from app.core.models import User
 from app.repositories.user_repository import UserRepository
 from app.core.security import hash_password, verify_password
-from typing import Optional
+from typing import Optional, List
 from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
@@ -10,6 +10,16 @@ from sqlalchemy.exc import IntegrityError
 class UserService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
+    
+    async def get_all_users(self, skip: int = 0, limit: int = 100) -> dict:
+        """Get all users with pagination"""
+        users, total = await self.user_repository.get_all(skip, limit)
+        return {
+            "users": [UserResponse.model_validate(u) for u in users],
+            "total": total,
+            "skip": skip,
+            "limit": limit
+        }
     
     async def create_user(self, user_create: UserCreate) -> UserResponse:
         # Check if email already exists
@@ -79,3 +89,17 @@ class UserService:
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         await self.user_repository.delete(user)
+    
+    async def upgrade_to_supervisor(self, user_id) -> UserResponse:
+        """Upgrade user to SUPERVISOR role (for paid subscription)"""
+        user = await self.user_repository.get_by_id(int(user_id))
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        from app.api.v1.schemas.user import UserRole
+        if user.role == UserRole.ADMIN:
+            raise HTTPException(status_code=400, detail="Admin cannot be downgraded to Supervisor")
+        
+        user.role = UserRole.SUPERVISOR
+        updated_user = await self.user_repository.update(user)
+        return UserResponse.model_validate(updated_user)

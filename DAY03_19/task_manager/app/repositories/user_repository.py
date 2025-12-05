@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.core.models import User
-from typing import Optional
+from typing import Optional, List
 
 class UserRepository:
     def __init__(self, db: AsyncSession):
@@ -12,6 +12,19 @@ class UserRepository:
         await self.db.commit()
         await self.db.refresh(user)
         return user
+
+    async def get_all(self, skip: int = 0, limit: int = 100) -> tuple[List[User], int]:
+        """Get all users with pagination"""
+        # Get total count
+        count_result = await self.db.execute(select(func.count(User.id)))
+        total = count_result.scalar()
+        
+        # Get users
+        result = await self.db.execute(
+            select(User).offset(skip).limit(limit).order_by(User.created_at.desc())
+        )
+        users = result.scalars().all()
+        return list(users), total
 
     async def get_by_id(self, user_id: int) -> Optional[User]:
         return await self.db.get(User, user_id)

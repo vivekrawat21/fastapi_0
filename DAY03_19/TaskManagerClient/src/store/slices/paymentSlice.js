@@ -1,4 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { authAPI } from '../../api/api'
+import { updateUserRole } from './authSlice'
 
 // Pricing plans data
 const pricingPlans = [
@@ -18,24 +20,26 @@ const pricingPlans = [
       'Advanced analytics',
       'Team collaboration',
       'API access',
+      'Delete tasks',
     ],
   },
   {
     id: 'pro',
     name: 'Pro',
     price: { monthly: 499, yearly: 4999 },
-    description: 'Best for professionals',
+    description: 'Best for professionals - Become a Supervisor',
     features: [
       'Unlimited tasks',
       'Advanced task management',
       'Priority support',
       'Unlimited projects',
       'Advanced analytics',
-      'Custom labels & tags',
+      'Delete any task',
+      'View all users',
       'Export to PDF/CSV',
     ],
     notIncluded: [
-      'Team collaboration',
+      'User management',
       'API access',
     ],
     popular: true,
@@ -59,18 +63,29 @@ const pricingPlans = [
   },
 ]
 
-// Async thunks (mock for now, can be connected to real API)
+// Async thunks - connects to backend
 export const processPayment = createAsyncThunk(
   'payment/processPayment',
-  async ({ planId, billingCycle }, { rejectWithValue }) => {
+  async ({ planId, billingCycle }, { rejectWithValue, dispatch }) => {
     try {
-      // Mock API call - replace with real payment API
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
       const plan = pricingPlans.find(p => p.id === planId)
       if (!plan) {
         throw new Error('Invalid plan')
       }
+      
+      // Call backend to upgrade user to SUPERVISOR
+      const response = await authAPI.subscribe(planId)
+      
+      // Update user in localStorage with new role
+      const userStr = localStorage.getItem('user')
+      if (userStr) {
+        const user = JSON.parse(userStr)
+        user.role = 'SUPERVISOR'
+        localStorage.setItem('user', JSON.stringify(user))
+      }
+      
+      // Update Redux auth state
+      dispatch(updateUserRole('SUPERVISOR'))
       
       return {
         planId,
@@ -78,9 +93,11 @@ export const processPayment = createAsyncThunk(
         billingCycle,
         amount: plan.price[billingCycle],
         subscribedAt: new Date().toISOString(),
+        newRole: response.data.new_role,
+        message: response.data.message,
       }
     } catch (error) {
-      return rejectWithValue(error.message || 'Payment failed')
+      return rejectWithValue(error.response?.data?.detail || error.message || 'Payment failed')
     }
   }
 )

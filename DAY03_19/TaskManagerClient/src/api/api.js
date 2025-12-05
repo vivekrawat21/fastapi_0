@@ -39,8 +39,9 @@ api.interceptors.response.use(
 // Auth API
 export const authAPI = {
   login: (email, password) => api.post('/auth/login', { email, password }),
-  register: (name, email, password) => api.post('/auth/register', { name, email, password }),
+  register: (name, email, password, role = 'COLLECTOR') => api.post('/auth/register', { name, email, password, role }),
   refresh: () => api.post('/auth/refresh'),
+  subscribe: (plan) => api.post('/auth/subscribe', { plan }),
 }
 
 // Tasks API
@@ -54,7 +55,7 @@ export const tasksAPI = {
 
 // Users API
 export const usersAPI = {
-  getAll: () => api.get('/users'),
+  getAll: (params = {}) => api.get('/users/', { params }),
   getById: (id) => api.get(`/users/${id}`),
   create: (user) => api.post('/users/', user),
   update: (id, user) => api.put(`/users/${id}`, user),

@@ -4,7 +4,7 @@ from app.api.v1.schemas.user import UserResponse
 from app.services.task_services import TaskService
 from datetime import date
 from typing import Optional, List
-from app.dependencies import get_task_service, get_current_user
+from app.dependencies import get_task_service, get_current_user, get_admin_or_supervisor
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
@@ -58,10 +58,10 @@ async def create_task(
 @router.delete("/{task_id}", status_code=204)
 async def delete_task(
     task_id: int = Path(..., description="The ID of the task to delete"),
-    current_user: UserResponse = Depends(get_current_user),
+    current_user: UserResponse = Depends(get_admin_or_supervisor),
     task_service: TaskService = Depends(get_task_service)
 ):
-    """Delete a task by its ID"""
+    """Delete a task by its ID (Admin & Supervisor only)"""
     await task_service.delete_task(str(task_id))
 
 

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 import { 
   fetchTasks, 
   updateTask, 
@@ -12,6 +13,7 @@ import {
   selectTasksFilter,
   selectTasks,
 } from '../store/slices/tasksSlice'
+import { selectUser } from '../store/slices/authSlice'
 
 const TaskList = () => {
   const dispatch = useDispatch()
@@ -21,6 +23,9 @@ const TaskList = () => {
   const loading = useSelector(selectTasksLoading)
   const error = useSelector(selectTasksError)
   const filter = useSelector(selectTasksFilter)
+  const user = useSelector(selectUser)
+
+  const canDelete = user?.role === 'ADMIN' || user?.role === 'SUPERVISOR'
 
   useEffect(() => {
     dispatch(fetchTasks())
@@ -172,15 +177,30 @@ const TaskList = () => {
                     <option value="in_progress" className="bg-slate-800">In Progress</option>
                     <option value="completed" className="bg-slate-800">Completed</option>
                   </select>
-                  <button
-                    onClick={() => handleDelete(task.id)}
-                    className="p-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
-                    title="Delete task"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                  {canDelete ? (
+                    <button
+                      onClick={() => handleDelete(task.id)}
+                      className="p-2 text-red-400 hover:bg-red-500/10 rounded-xl transition-all"
+                      title="Delete task"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <Link
+                      to="/payment"
+                      className="p-2 text-yellow-400 hover:bg-yellow-500/10 rounded-xl transition-all group relative"
+                      title="Upgrade to Pro to delete tasks"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-xs text-white px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                        Upgrade to delete
+                      </span>
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>

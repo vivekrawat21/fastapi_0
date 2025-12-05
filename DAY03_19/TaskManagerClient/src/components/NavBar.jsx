@@ -78,13 +78,34 @@ const NavBar = () => {
                 >
                   Pricing
                 </Link>
+                {/* Admin link - only for Admin and Supervisor */}
+                {(user?.role?.toUpperCase() === 'ADMIN' || user?.role?.toUpperCase() === 'SUPERVISOR') && (
+                  <Link
+                    to="/admin"
+                    className={`font-medium transition-colors px-4 py-2 rounded-lg ${
+                      isActive('/admin')
+                        ? 'text-purple-400 bg-purple-500/10'
+                        : 'text-gray-300 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {user?.role?.toUpperCase() === 'ADMIN' ? 'Admin' : 'Users'}
+                  </Link>
+                )}
                 <div className="flex items-center gap-3 pl-4 border-l border-white/10">
                   <div className="w-9 h-9 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                     <span className="text-white font-semibold text-sm">
-                      {user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
+                      {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <span className="text-gray-300 font-medium">{user.name || user.email}</span>
+                  <div className="flex flex-col">
+                    <span className="text-gray-300 font-medium text-sm">{user?.name || user?.email}</span>
+                    <span className={`text-xs ${
+                      user?.role?.toUpperCase() === 'ADMIN' ? 'text-red-400' :
+                      user?.role?.toUpperCase() === 'SUPERVISOR' ? 'text-purple-400' : 'text-blue-400'
+                    }`}>
+                      {user?.role}
+                    </span>
+                  </div>
                   <button
                     onClick={handleLogout}
                     className="ml-2 px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors font-medium"

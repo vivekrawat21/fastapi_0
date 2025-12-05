@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends, Response, Cookie
 from pydantic import BaseModel
 from app.api.v1.schemas.user import UserResponse
 from app.services.user_services import UserService
-from app.dependencies import get_user_service
+from app.dependencies import get_user_service, get_current_user
 from app.core.security import verify_password
 from app.core.security import create_access_token, create_referesh_token, decode_token
 
@@ -21,6 +21,14 @@ class RegisterRequest(BaseModel):
 class LoginResponse(BaseModel):
     type: Optional[str] = "Bearer"
     access_token: str
+
+class SubscriptionRequest(BaseModel):
+    plan: str 
+
+class SubscriptionResponse(BaseModel):
+    message: str
+    user: UserResponse
+    new_role: str
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -81,4 +89,34 @@ async def refresh(
     access_token = create_access_token(data={"sub": email, "role": role})
     
     return LoginResponse(access_token=access_token)
+
+
+@router.post("/subscribe", response_model=SubscriptionResponse)
+async def subscribe_to_plan(
+    subscription: SubscriptionRequest,
+    current_user: UserResponse = Depends(get_current_user),
+    user_service: UserService = Depends(get_user_service)
+):
+    """Subscribe to Pro plan and upgrade to SUPERVISOR role"""
+    if subscription.plan.lower() not in ["pro", "enterprise"]:
+        raise HTTPException(status_code=400, detail="Invalid plan. Choose 'pro' or 'enterprise'")
+    
+    role_str = current_user.role.value if hasattr(current_user.role, 'value') else str(current_user.role)
+    
+    if role_str == "ADMIN":
+        raise HTTPException(status_code=400, detail="Admin users cannot change their role")
+    
+    if role_str == "SUPERVISOR":
+        return SubscriptionResponse(
+            message="You already have an active Pro subscription!",
+            user=current_user,
+            new_role="SUPERVISOR"
+        )
+    updated_user = await user_service.upgrade_to_supervisor(current_user.id)
+    
+    return SubscriptionResponse(
+        message=f"Successfully subscribed to {subscription.plan} plan!",
+        user=updated_user,
+        new_role="SUPERVISOR"
+    )
     

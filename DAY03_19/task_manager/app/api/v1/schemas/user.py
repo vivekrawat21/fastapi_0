@@ -31,6 +31,7 @@ class UserUpdate(BaseModel):
     """Schema for updating user information."""
     name: Optional[str] = Field(None, min_length=2, max_length=100, json_schema_extra={'example': "John Doe"})
     email: Optional[str] = Field(None, min_length=5, max_length=254, json_schema_extra={'example': "john.doe@example.com"})
+    role: Optional[UserRole] = Field(None, json_schema_extra={'example': "COLLECTOR"})
     is_active: Optional[bool] = Field(None, json_schema_extra={'example': True})
 
 
